@@ -63,7 +63,7 @@ public class InstantiationCustomizationTest {
     String validationMessage = "Failed to instantiate type using JsonbCreator annotated constructor during unmarshalling.";
     assertThat(validationMessage, unmarshalledObject.getStringInstance(), is("Constructor String"));
     assertThat(validationMessage, unmarshalledObject.getIntegerInstance(), is(2));
-    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(2));
+    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(2f));
   }
 
   /*
@@ -84,7 +84,7 @@ public class InstantiationCustomizationTest {
             + "fields as normally during unmarshalling.";
     assertThat(validationMessage, unmarshalledObject.getStringInstance(), is("Constructor String"));
     assertThat(validationMessage, unmarshalledObject.getIntegerInstance(), is(2));
-    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(1));
+    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(1f));
   }
 
   /*
@@ -196,7 +196,7 @@ public class InstantiationCustomizationTest {
             + "annotated argument during unmarshalling.";
     assertThat(validationMessage, unmarshalledObject.getStringInstance(), is("Constructor String"));
     assertThat(validationMessage, unmarshalledObject.getIntegerInstance(), is(1));
-    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(2));
+    assertThat(validationMessage, unmarshalledObject.getFloatInstance(), is(2f));
   }
 
   /*
