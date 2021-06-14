@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,37 +20,23 @@
 
 package jakarta.json.bind.tck.defaultmapping.polymorphictypes;
 
-import static org.junit.Assert.fail;
-
-import java.lang.invoke.MethodHandles;
-
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.tck.defaultmapping.polymorphictypes.model.StringContainer;
 import jakarta.json.bind.tck.defaultmapping.polymorphictypes.model.StringContainerSubClass;
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.not;
 
 /**
  * @test
  * @sources PolymorphicMappingTest.java
  * @executeClass com.sun.ts.tests.jsonb.defaultmapping.polymorphictypes.PolymorphicMappingTest
  **/
-@RunWith(Arquillian.class)
 public class PolymorphicMappingTest {
-    
-    @Deployment
-    public static WebArchive createTestArchive() {
-        return ShrinkWrap.create(WebArchive.class)
-                .addPackages(true, MethodHandles.lookup().lookupClass().getPackage().getName());
-    }
-
-  private final Jsonb jsonb = JsonbBuilder.create();
 
   /*
    * @testName: testPolymorphicTypes
@@ -62,19 +48,15 @@ public class PolymorphicMappingTest {
    */
   @Test
   public void testPolymorphicTypes() {
+      Jsonb jsonb = JsonbBuilder.create();
     String jsonString = jsonb.toJson(new StringContainerSubClass());
-    if (!jsonString.matches(
-        "\\{\\s*\"instance\"\\s*:\\s*\"Test String\"\\s*,\\s*\"newInstance\"\\s*:\\s*\"SubClass Test String\"\\s*\\}")) {
-      fail("Failed to get attribute value from subclass.");
-    }
+    assertThat("Failed to get attribute value from subclass.",
+               jsonString, matchesPattern("\\{\\s*\"instance\"\\s*:\\s*\"Test String\"\\s*,"
+                                                  + "\\s*\"newInstance\"\\s*:\\s*\"SubClass Test String\"\\s*\\}"));
 
-    StringContainer unmarshalledObject = jsonb.fromJson(
-        "{ \"instance\" : \"New Test String\", \"newInstance\" : \"New SubClass Test String\" }",
-        StringContainer.class);
-    if (StringContainerSubClass.class
-        .isAssignableFrom(unmarshalledObject.getClass())) {
-      fail("Polymorphic types support is not expected.");
-    }
-    return; // passed
+    String toDeserialize = "{ \"instance\" : \"New Test String\", \"newInstance\" : \"New SubClass Test String\" }";
+    StringContainer unmarshalledObject = jsonb.fromJson(toDeserialize, StringContainer.class);
+      assertThat("Polymorphic types support is not expected.",
+                 unmarshalledObject, not(instanceOf(StringContainerSubClass.class)));
   }
 }
